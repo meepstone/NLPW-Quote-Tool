@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NLPW Quote Tool</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root {
+  --navy: #0d2a5e;
+  --navy-mid: #1c3f8a;
+  --accent: #f5c800;
+  --accent-dark: #d4a800;
+  --green: #16a34a;
+  --green-light: rgba(22,163,74,0.12);
+  --red: #dc2626;
+  --white: #ffffff;
+  --bg: #f0f4ff;
+  --card: #ffffff;
+  --border: #ccd6f5;
+  --text: #1a2235;
+  --muted: #6b7a99;
+  --font-display: 'Bebas Neue', Impact, sans-serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --radius: 12px;
+  --shadow: 0 4px 24px rgba(28,63,138,0.1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 16px; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 0 0 60px;
+}
+
+/* ── HEADER ── */
+.header {
+  background: var(--navy);
+  padding: 16px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+.header-logo { font-family: var(--font-display); font-size: 1.3rem; color: white; letter-spacing: 1.5px; line-height: 1; }
+.header-logo span { color: var(--accent); }
+.header-tag { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-top: 2px; }
+
+/* ── LAYOUT ── */
+.container { max-width: 680px; margin: 0 auto; padding: 24px 16px; }
+
+/* ── CUSTOMER CARD ── */
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 22px 20px;
+  border: 1.5px solid var(--border);
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+.card-title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--navy);
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.card-title-icon { font-size: 1rem; }
+
+/* ── FORM INPUTS ── */
+.field { margin-bottom: 14px; }
+.field label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  margin-bottom: 5px;
+}
+.field input[type="text"],
+.field input[type="number"],
+.field input[type="tel"] {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--text);
+  background: white;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -moz-appearance: textfield;
+}
+.field input[type="number"]::-webkit-outer-spin-button,
+.field input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+.field input:focus { border-color: var(--navy-mid); box-shadow: 0 0 0 3px rgba(28,63,138,0.1); }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.field-hint { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+
+/* ── SERVICE ROWS ── */
+.service-row {
+  display: flex; align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+}
+.service-row:last-child { border-bottom: none; padding-bottom: 0; }
+.service-row:first-child { padding-top: 0; }
+
+.service-toggle {
+  width: 44px; height: 24px;
+  background: var(--border);
+  border-radius: 12px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+  border: none;
+  outline: none;
+}
+.service-toggle::after {
+  content: '';
+  position: absolute;
+  width: 18px; height: 18px;
+  background: white;
+  border-radius: 50%;
+  top: 3px; left: 3px;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+.service-toggle.on { background: var(--navy-mid); }
+.service-toggle.on::after { transform: translateX(20px); }
+
+.service-info { flex: 1; min-width: 0; }
+.service-name { font-size: 0.92rem; font-weight: 700; color: var(--text); }
+.service-rate { font-size: 0.75rem; color: var(--muted); margin-top: 1px; }
+
+.service-input-wrap { display: flex; align-items: center; gap: 6px; }
+.service-sqft {
+  width: 90px;
+  padding: 8px 10px;
+  border: 1.5px solid var(--border);
+  border-radius: 7px;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  text-align: right;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -moz-appearance: textfield;
+}
+.service-sqft::-webkit-outer-spin-button,
+.service-sqft::-webkit-inner-spin-button { -webkit-appearance: none; }
+.service-sqft:focus { border-color: var(--navy-mid); box-shadow: 0 0 0 3px rgba(28,63,138,0.1); }
+.service-sqft:disabled { background: #f5f7ff; color: var(--muted); cursor: not-allowed; }
+.sqft-label { font-size: 0.75rem; color: var(--muted); font-weight: 600; white-space: nowrap; }
+
+.service-price {
+  min-width: 68px;
+  text-align: right;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--navy-mid);
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  letter-spacing: 0.5px;
+}
+.service-price.inactive { color: var(--border); }
+
+/* Pool cage flat rate badge */
+.flat-badge {
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--navy-mid);
+  background: var(--bg); border: 1px solid var(--border);
+  padding: 4px 8px; border-radius: 6px; white-space: nowrap;
+}
+
+/* ── QUOTE RESULT ── */
+.result-card {
+  background: var(--navy);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.result-card::before {
+  content: '';
+  position: absolute; top: -40px; right: -40px;
+  width: 160px; height: 160px;
+  background: radial-gradient(circle, rgba(245,200,0,0.15), transparent 70%);
+  pointer-events: none;
+}
+
+.result-lines { margin-bottom: 16px; }
+.result-line {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 0;
+  font-size: 0.88rem;
+}
+.result-line-label { color: rgba(255,255,255,0.6); }
+.result-line-price { color: white; font-weight: 600; }
+.result-line.inactive .result-line-label,
+.result-line.inactive .result-line-price { color: rgba(255,255,255,0.2); text-decoration: line-through; }
+
+.result-divider { height: 1px; background: rgba(255,255,255,0.12); margin: 12px 0; }
+
+.result-subtotal {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 8px;
+}
+.result-subtotal-label { font-size: 0.85rem; color: rgba(255,255,255,0.5); }
+.result-subtotal-price { font-size: 0.95rem; color: rgba(255,255,255,0.5); text-decoration: line-through; }
+
+.result-total {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 12px;
+}
+.result-total-label { font-size: 1rem; font-weight: 700; color: white; }
+.result-total-price {
+  font-family: var(--font-display);
+  font-size: 2.8rem; color: var(--accent);
+  letter-spacing: 1px; line-height: 1;
+}
+
+.result-savings {
+  background: var(--green-light);
+  border: 1px solid rgba(22,163,74,0.3);
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 0.85rem;
+}
+.result-savings-label { color: #4ade80; font-weight: 600; }
+.result-savings-amount { color: #4ade80; font-weight: 800; font-size: 1rem; }
+
+.result-no-services {
+  text-align: center; color: rgba(255,255,255,0.35);
+  font-size: 0.9rem; padding: 8px 0;
+}
+
+.bundle-nudge {
+  background: rgba(168,200,240,0.1);
+  border: 1px solid rgba(168,200,240,0.25);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.82rem;
+  color: #a8c8f0;
+  text-align: center;
+}
+
+/* ── NOTES + ACTIONS ── */
+.notes-field textarea {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  color: var(--text);
+  resize: vertical;
+  min-height: 80px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.notes-field textarea:focus { border-color: var(--navy-mid); box-shadow: 0 0 0 3px rgba(28,63,138,0.1); }
+
+.actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.btn {
+  padding: 14px 18px;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.92rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.btn-primary { background: var(--accent); color: var(--text); }
+.btn-primary:hover { background: var(--accent-dark); transform: translateY(-1px); }
+.btn-secondary { background: white; color: var(--navy); border: 2px solid var(--border); }
+.btn-secondary:hover { border-color: var(--navy-mid); background: var(--bg); }
+.btn-danger { background: white; color: var(--red); border: 2px solid #fecaca; }
+.btn-danger:hover { background: #fef2f2; }
+.btn-full { grid-column: 1 / -1; }
+
+/* ── QUOTE SUMMARY (print/share) ── */
+.summary-card {
+  background: white;
+  border: 2px solid var(--navy);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: none;
+  margin-bottom: 16px;
+}
+.summary-card.visible { display: block; }
+.summary-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+.summary-logo { font-family: var(--font-display); font-size: 1.2rem; color: var(--navy); letter-spacing: 1px; }
+.summary-logo span { color: var(--accent-dark); }
+.summary-date { font-size: 0.78rem; color: var(--muted); text-align: right; }
+.summary-customer { margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+.summary-customer h4 { font-size: 1rem; font-weight: 700; color: var(--navy); }
+.summary-customer p { font-size: 0.85rem; color: var(--muted); margin-top: 2px; }
+.summary-lines { margin-bottom: 14px; }
+.summary-line { display: flex; justify-content: space-between; font-size: 0.88rem; padding: 5px 0; border-bottom: 1px dashed var(--border); }
+.summary-line:last-child { border: none; }
+.summary-line-label { color: var(--text); }
+.summary-line-price { font-weight: 600; color: var(--text); }
+.summary-total-row { display: flex; justify-content: space-between; align-items: baseline; padding-top: 12px; border-top: 2px solid var(--navy); margin-top: 8px; }
+.summary-total-label { font-weight: 700; font-size: 0.95rem; color: var(--navy); }
+.summary-total-price { font-family: var(--font-display); font-size: 2rem; color: var(--navy); letter-spacing: 0.5px; }
+.summary-savings { text-align: center; font-size: 0.8rem; color: var(--green); font-weight: 600; margin-top: 8px; }
+.summary-footer { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 0.75rem; color: var(--muted); text-align: center; }
+.summary-notes { margin-top: 10px; font-size: 0.82rem; color: var(--muted); font-style: italic; }
+
+/* ── HISTORY ── */
+.history-empty { text-align: center; color: var(--muted); font-size: 0.88rem; padding: 16px 0; }
+.history-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 0; border-bottom: 1px solid var(--border);
+  gap: 12px;
+}
+.history-item:last-child { border: none; }
+.history-name { font-size: 0.9rem; font-weight: 700; color: var(--text); }
+.history-meta { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+.history-price { font-family: var(--font-display); font-size: 1.3rem; color: var(--navy-mid); letter-spacing: 0.5px; }
+.history-load { font-size: 0.75rem; color: var(--navy-mid); font-weight: 700; cursor: pointer; text-decoration: underline; flex-shrink: 0; }
+
+/* ── MOBILE ── */
+@media (max-width: 480px) {
+  .field-row { grid-template-columns: 1fr; }
+  .actions { grid-template-columns: 1fr; }
+  .btn-full { grid-column: auto; }
+  .service-sqft { width: 76px; }
+  .result-total-price { font-size: 2.2rem; }
+}
+
+@media print {
+  body { background: white; padding: 0; }
+  .header, .card:not(.print-only), .result-card, .actions, .history-section { display: none !important; }
+  .summary-card { display: block !important; border: 1px solid #ccc; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-logo">Next Level <span>PW</span></div>
+    <div class="header-tag">Quote Tool</div>
+  </div>
+  <div style="font-size:0.78rem; color:rgba(255,255,255,0.4); text-align:right; line-height:1.5;">
+    Private Use Only<br>v1.0
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- CUSTOMER INFO -->
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">👤</span> Customer Info</div>
+    <div class="field-row">
+      <div class="field">
+        <label>Customer Name</label>
+        <input type="text" id="cust-name" placeholder="John Smith" oninput="updateSummary()">
+      </div>
+      <div class="field">
+        <label>Phone</label>
+        <input type="tel" id="cust-phone" placeholder="(239) 555-1234" oninput="updateSummary()">
+      </div>
+    </div>
+    <div class="field">
+      <label>Property Address</label>
+      <input type="text" id="cust-address" placeholder="123 Palm Ave, Fort Myers, FL" oninput="updateSummary()">
+    </div>
+  </div>
+
+  <!-- SERVICES -->
+  <div class="card">
+    <div class="card-title"><span class="card-title-icon">🧹</span> Services & Square Footage</div>
+
+    <!-- Roof -->
+    <div class="service-row">
+      <button class="service-toggle on" id="toggle-roof" onclick="toggleSvc('roof')"></button>
+      <div class="service-info">
+        <div class="service-name">🏠 Roof Cleaning</div>
+        <div class="service-rate" id="rate-roof">$0.250/sq ft</div>
+      </div>
+      <div class="service-input-wrap">
+        <input type="number" class="service-sqft" id="sqft-roof" value="2000" min="0" max="10000" oninput="calc()">
+        <span class="sqft-label">sq ft</span>
+      </div>
+      <div class="service-price" id="price-roof">$500</div>
+    </div>
+
+    <!-- House -->
+    <div class="service-row">
+      <button class="service-toggle on" id="toggle-house" onclick="toggleSvc('house')"></button>
+      <div class="service-info">
+        <div class="service-name">🏡 House Exterior Wash</div>
+        <div class="service-rate">$0.08/sq ft · walls, soffits & gutters</div>
+      </div>
+      <div class="service-input-wrap">
+        <input type="number" class="service-sqft" id="sqft-house" value="2000" min="0" max="10000" oninput="calc()">
+        <span class="sqft-label">sq ft</span>
+      </div>
+      <div class="service-price" id="price-house">$160</div>
+    </div>
+
+    <!-- Concrete/Pavers -->
+    <div class="service-row">
+      <button class="service-toggle on" id="toggle-concrete" onclick="toggleSvc('concrete')"></button>
+      <div class="service-info">
+        <div class="service-name">🚿 Concrete/Paver Cleaning</div>
+        <div class="service-rate">$0.20/sq ft</div>
+      </div>
+      <div class="service-input-wrap">
+        <input type="number" class="service-sqft" id="sqft-concrete" value="600" min="0" max="10000" oninput="calc()">
+        <span class="sqft-label">sq ft</span>
+      </div>
+      <div class="service-price" id="price-concrete">$120</div>
+    </div>
+
+    <!-- Pool Cage -->
+    <div class="service-row">
+      <button class="service-toggle on" id="toggle-pool" onclick="toggleSvc('pool')"></button>
+      <div class="service-info">
+        <div class="service-name">🏊 Pool Cage Cleaning</div>
+        <div class="service-rate">Flat rate</div>
+      </div>
+      <div class="service-input-wrap">
+        <span class="flat-badge">$150 flat</span>
+      </div>
+      <div class="service-price" id="price-pool">$150</div>
+    </div>
+
+    <!-- Paver Sealing -->
+    <div class="service-row">
+      <button class="service-toggle on" id="toggle-paver" onclick="toggleSvc('paver')"></button>
+      <div class="service-info">
+        <div class="service-name">🧱 Paver Sealing</div>
+        <div class="service-rate">$1.30/sq ft</div>
+      </div>
+      <div class="service-input-wrap">
+        <input type="number" class="service-sqft" id="sqft-paver" value="600" min="0" max="99999" oninput="calc()">
+        <span class="sqft-label">sq ft</span>
+      </div>
+      <div class="service-price" id="price-paver">$780</div>
+    </div>
+
+  </div>
+
+  <!-- QUOTE RESULT -->
+  <div class="result-card">
+    <div class="result-lines" id="result-lines"></div>
+    <div class="result-divider"></div>
+    <div id="result-totals"></div>
+  </div>
+
+  <!-- NOTES -->
+  <div class="card notes-field">
+    <div class="card-title"><span class="card-title-icon">📝</span> Job Notes</div>
+    <textarea id="job-notes" placeholder="Heavy algae on north side, pavers last sealed 4 years ago, gate code 1234..." oninput="updateSummary()"></textarea>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="actions">
+    <button class="btn btn-primary" onclick="showSummary()">📋 Generate Quote</button>
+    <button class="btn btn-secondary" onclick="copyQuote()">📱 Copy for Text/Email</button>
+    <button class="btn btn-secondary" onclick="saveToHistory()">💾 Save to History</button>
+    <button class="btn btn-danger" onclick="resetForm()">🗑 Clear</button>
+  </div>
+
+  <!-- PRINTABLE SUMMARY -->
+  <div class="summary-card" id="summary-card">
+    <div class="summary-header">
+      <div>
+        <div class="summary-logo">Next Level <span>Pressure Washing</span></div>
+        <div style="font-size:0.75rem; color:#6b7a99; margin-top:2px;">(239) 205-5045 · nextlevelpressurewashing.com</div>
+      </div>
+      <div class="summary-date" id="summary-date"></div>
+    </div>
+    <div class="summary-customer" id="summary-customer"></div>
+    <div class="summary-lines" id="summary-lines"></div>
+    <div id="summary-total-section"></div>
+    <div class="summary-notes" id="summary-notes"></div>
+    <div class="summary-footer">
+      Licensed & Insured · Owner on every job · 100% Satisfaction Guarantee · Plant Damage Guarantee
+    </div>
+    <div style="margin-top:12px; display:flex; gap:10px; justify-content:flex-end;" class="no-print">
+      <button class="btn btn-secondary" onclick="window.print()" style="padding:8px 14px; font-size:0.82rem;">🖨 Print</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('summary-card').classList.remove('visible')" style="padding:8px 14px; font-size:0.82rem;">✕ Close</button>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="card history-section">
+    <div class="card-title"><span class="card-title-icon">🕐</span> Recent Quotes</div>
+    <div id="history-list"><div class="history-empty">No saved quotes yet.</div></div>
+  </div>
+
+</div>
+
+<script>
+// ── STATE ──
+var active = { roof: true, house: true, concrete: true, pool: true, paver: true };
+
+// ── PRICING ──
+var RATES = {
+  roof_min: 0.25,   // at 1800 sqft
+  roof_max: 0.225,  // at 3500 sqft
+  roof_sqft_min: 1800,
+  roof_sqft_max: 3500,
+  house: 0.08,
+  concrete: 0.20,
+  pool_flat: 150,
+  paver: 1.30
+};
+var BUNDLE_DISCOUNT = 0.15;
+
+function roofRate(sqft) {
+  if (sqft <= RATES.roof_sqft_min) return RATES.roof_min;
+  if (sqft >= RATES.roof_sqft_max) return RATES.roof_max;
+  var t = (sqft - RATES.roof_sqft_min) / (RATES.roof_sqft_max - RATES.roof_sqft_min);
+  return RATES.roof_min - (t * (RATES.roof_min - RATES.roof_max));
+}
+
+function fmt(n) {
+  return '$' + Math.round(n).toLocaleString();
+}
+
+function fmtDecimal(n) {
+  return '$' + n.toFixed(2);
+}
+
+// ── TOGGLE ──
+function toggleSvc(key) {
+  active[key] = !active[key];
+  var btn = document.getElementById('toggle-' + key);
+  btn.classList.toggle('on', active[key]);
+  if (key !== 'pool') {
+    var input = document.getElementById('sqft-' + key);
+    if (input) input.disabled = !active[key];
+  }
+  calc();
+}
+
+// ── CALCULATE ──
+function calc() {
+  var roofSqft     = parseFloat(document.getElementById('sqft-roof').value) || 0;
+  var houseSqft    = parseFloat(document.getElementById('sqft-house').value) || 0;
+  var concreteSqft = parseFloat(document.getElementById('sqft-concrete').value) || 0;
+
+  var paverSqft    = parseFloat(document.getElementById('sqft-paver').value) || 0;
+
+  var rate = roofRate(roofSqft);
+  document.getElementById('rate-roof').textContent = fmtDecimal(rate) + '/sq ft';
+
+  var prices = {
+    roof:     roofSqft * rate,
+    house:    houseSqft * RATES.house,
+    concrete: concreteSqft * RATES.concrete,
+    pool:     RATES.pool_flat,
+    paver:    paverSqft * RATES.paver
+  };
+
+  // Update individual price displays
+  ['roof','house','concrete','pool','paver'].forEach(function(k) {
+    var el = document.getElementById('price-' + k);
+    if (active[k]) {
+      el.textContent = fmt(prices[k]);
+      el.classList.remove('inactive');
+    } else {
+      el.textContent = fmt(prices[k]);
+      el.classList.add('inactive');
+    }
+  });
+
+  // Calculate totals
+  var activeKeys = ['roof','house','concrete','pool','paver'].filter(function(k) { return active[k]; });
+  var subtotal = activeKeys.reduce(function(s, k) { return s + prices[k]; }, 0);
+  var bundleActive = activeKeys.length >= 2;
+  var discount = bundleActive ? subtotal * BUNDLE_DISCOUNT : 0;
+  var total = subtotal - discount;
+
+  // Result lines
+  var linesHtml = '';
+  var labelMap = {
+    roof:     '🏠 Roof Cleaning (' + roofSqft.toLocaleString() + ' sq ft @ ' + fmtDecimal(rate) + ')',
+    house:    '🏡 House Exterior Wash (' + houseSqft.toLocaleString() + ' sq ft)',
+    concrete: '🚿 Concrete/Paver Cleaning (' + concreteSqft.toLocaleString() + ' sq ft)',
+    pool:     '🏊 Pool Cage Cleaning (flat rate)',
+    paver:    '🧱 Paver Sealing (' + paverSqft.toLocaleString() + ' sq ft @ $1.30)'
+  };
+  ['roof','house','concrete','pool','paver'].forEach(function(k) {
+    linesHtml += '<div class="result-line' + (active[k] ? '' : ' inactive') + '">' +
+      '<span class="result-line-label">' + labelMap[k] + '</span>' +
+      '<span class="result-line-price">' + fmt(prices[k]) + '</span>' +
+    '</div>';
+  });
+  document.getElementById('result-lines').innerHTML = linesHtml;
+
+  // Totals
+  var totalsHtml = '';
+  if (activeKeys.length === 0) {
+    totalsHtml = '<div class="result-no-services">Select at least one service to calculate.</div>';
+  } else if (bundleActive) {
+    totalsHtml =
+      '<div class="result-subtotal">' +
+        '<span class="result-subtotal-label">Individual total</span>' +
+        '<span class="result-subtotal-price">' + fmt(subtotal) + '</span>' +
+      '</div>' +
+      '<div class="result-total">' +
+        '<span class="result-total-label">Bundle Price (15% off)</span>' +
+        '<span class="result-total-price">' + fmt(total) + '</span>' +
+      '</div>' +
+      '<div class="result-savings">' +
+        '<span class="result-savings-label">🟢 Customer saves</span>' +
+        '<span class="result-savings-amount">' + fmt(discount) + '</span>' +
+      '</div>';
+  } else {
+    totalsHtml =
+      '<div class="result-total">' +
+        '<span class="result-total-label">Estimated Total</span>' +
+        '<span class="result-total-price">' + fmt(total) + '</span>' +
+      '</div>' +
+      '<div class="bundle-nudge">💡 Add a second service — customer saves 15% on the bundle</div>';
+  }
+  document.getElementById('result-totals').innerHTML = totalsHtml;
+
+  // Store for summary/copy
+  window._lastQuote = { prices: prices, subtotal: subtotal, discount: discount, total: total, bundleActive: bundleActive, activeKeys: activeKeys, labelMap: labelMap, rate: rate, roofSqft: roofSqft, houseSqft: houseSqft, concreteSqft: concreteSqft };
+  updateSummary();
+}
+
+// ── GENERATE SUMMARY ──
+function showSummary() {
+  updateSummary();
+  document.getElementById('summary-card').classList.add('visible');
+  document.getElementById('summary-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function updateSummary() {
+  if (!window._lastQuote) return;
+  var q = window._lastQuote;
+  var name = document.getElementById('cust-name').value || 'Customer';
+  var phone = document.getElementById('cust-phone').value || '';
+  var address = document.getElementById('cust-address').value || '';
+  var notes = document.getElementById('job-notes').value || '';
+  var now = new Date();
+  var dateStr = now.toLocaleDateString('en-US', { weekday:'short', year:'numeric', month:'short', day:'numeric' });
+
+  document.getElementById('summary-date').innerHTML = 'Quote Date:<br><strong>' + dateStr + '</strong>';
+  document.getElementById('summary-customer').innerHTML =
+    '<h4>' + name + '</h4>' +
+    (phone ? '<p>📞 ' + phone + '</p>' : '') +
+    (address ? '<p>📍 ' + address + '</p>' : '');
+
+  var linesHtml = '';
+  q.activeKeys.forEach(function(k) {
+    linesHtml += '<div class="summary-line">' +
+      '<span class="summary-line-label">' + q.labelMap[k] + '</span>' +
+      '<span class="summary-line-price">' + fmt(q.prices[k]) + '</span>' +
+    '</div>';
+  });
+  document.getElementById('summary-lines').innerHTML = linesHtml;
+
+  var totalSection = '';
+  if (q.bundleActive) {
+    totalSection =
+      '<div style="display:flex;justify-content:space-between;font-size:0.85rem;color:#6b7a99;margin-bottom:4px;">' +
+        '<span>Individual total</span><span style="text-decoration:line-through;">' + fmt(q.subtotal) + '</span>' +
+      '</div>';
+  }
+  totalSection +=
+    '<div class="summary-total-row">' +
+      '<span class="summary-total-label">' + (q.bundleActive ? 'Bundle Price (15% off)' : 'Estimated Total') + '</span>' +
+      '<span class="summary-total-price">' + fmt(q.total) + '</span>' +
+    '</div>';
+  if (q.bundleActive) {
+    totalSection += '<div class="summary-savings">Customer saves ' + fmt(q.discount) + ' by bundling services</div>';
+  }
+  document.getElementById('summary-total-section').innerHTML = totalSection;
+  document.getElementById('summary-notes').textContent = notes ? '📝 Notes: ' + notes : '';
+}
+
+// ── COPY FOR TEXT/EMAIL ──
+function copyQuote() {
+  if (!window._lastQuote) return;
+  var q = window._lastQuote;
+  var name = document.getElementById('cust-name').value || 'Hi';
+  var notes = document.getElementById('job-notes').value;
+  var now = new Date().toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+
+  var lines = ['Next Level Pressure Washing — Quote', now, ''];
+  q.activeKeys.forEach(function(k) {
+    lines.push('• ' + q.labelMap[k] + ': ' + fmt(q.prices[k]));
+  });
+  lines.push('');
+  if (q.bundleActive) {
+    lines.push('Individual total: ' + fmt(q.subtotal));
+    lines.push('Bundle discount (15%): -' + fmt(q.discount));
+    lines.push('YOUR PRICE: ' + fmt(q.total));
+  } else {
+    lines.push('Total: ' + fmt(q.total));
+  }
+  if (notes) { lines.push(''); lines.push('Notes: ' + notes); }
+  lines.push('');
+  lines.push('Licensed & Insured | Owner on every job');
+  lines.push('(239) 205-5045 | nextlevelpressurewashing.com');
+
+  var text = lines.join('\n');
+  navigator.clipboard.writeText(text).then(function() {
+    var btn = document.querySelector('[onclick="copyQuote()"]');
+    var orig = btn.textContent;
+    btn.textContent = '✅ Copied!';
+    btn.style.borderColor = '#16a34a';
+    btn.style.color = '#16a34a';
+    setTimeout(function() {
+      btn.textContent = orig;
+      btn.style.borderColor = '';
+      btn.style.color = '';
+    }, 2000);
+  });
+}
+
+// ── SAVE TO HISTORY ──
+function saveToHistory() {
+  if (!window._lastQuote) return;
+  var q = window._lastQuote;
+  var name = document.getElementById('cust-name').value || 'Unnamed';
+  var address = document.getElementById('cust-address').value || '';
+  var now = new Date();
+  var entry = {
+    id: Date.now(),
+    name: name,
+    address: address,
+    total: q.total,
+    services: q.activeKeys.length,
+    date: now.toLocaleDateString('en-US', { month:'short', day:'numeric' }),
+    state: {
+      name: name,
+      phone: document.getElementById('cust-phone').value,
+      address: address,
+      notes: document.getElementById('job-notes').value,
+      active: JSON.parse(JSON.stringify(active)),
+      sqfts: {
+        roof: document.getElementById('sqft-roof').value,
+        house: document.getElementById('sqft-house').value,
+        concrete: document.getElementById('sqft-concrete').value,
+        paver: document.getElementById('sqft-paver').value
+      }
+    }
+  };
+  var history = JSON.parse(localStorage.getItem('nlpw_quotes') || '[]');
+  history.unshift(entry);
+  if (history.length > 20) history = history.slice(0, 20);
+  localStorage.setItem('nlpw_quotes', JSON.stringify(history));
+  renderHistory();
+
+  var btn = document.querySelector('[onclick="saveToHistory()"]');
+  var orig = btn.textContent;
+  btn.textContent = '✅ Saved!';
+  setTimeout(function() { btn.textContent = orig; }, 1800);
+}
+
+// ── LOAD FROM HISTORY ──
+function loadQuote(id) {
+  var history = JSON.parse(localStorage.getItem('nlpw_quotes') || '[]');
+  var entry = history.find(function(e) { return e.id === id; });
+  if (!entry) return;
+  var s = entry.state;
+  document.getElementById('cust-name').value = s.name;
+  document.getElementById('cust-phone').value = s.phone;
+  document.getElementById('cust-address').value = s.address;
+  document.getElementById('job-notes').value = s.notes;
+  document.getElementById('sqft-roof').value = s.sqfts.roof;
+  document.getElementById('sqft-house').value = s.sqfts.house;
+  document.getElementById('sqft-concrete').value = s.sqfts.concrete;
+  document.getElementById('sqft-paver').value = s.sqfts.paver || 0;
+  Object.keys(s.active).forEach(function(k) {
+    active[k] = s.active[k];
+    var btn = document.getElementById('toggle-' + k);
+    if (btn) btn.classList.toggle('on', active[k]);
+    if (k !== 'pool') {
+      var input = document.getElementById('sqft-' + k);
+      if (input) input.disabled = !active[k];
+    }
+  });
+  calc();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── DELETE FROM HISTORY ──
+function deleteQuote(id) {
+  var history = JSON.parse(localStorage.getItem('nlpw_quotes') || '[]');
+  history = history.filter(function(e) { return e.id !== id; });
+  localStorage.setItem('nlpw_quotes', JSON.stringify(history));
+  renderHistory();
+}
+
+// ── RENDER HISTORY ──
+function renderHistory() {
+  var history = JSON.parse(localStorage.getItem('nlpw_quotes') || '[]');
+  var container = document.getElementById('history-list');
+  if (!history.length) {
+    container.innerHTML = '<div class="history-empty">No saved quotes yet.</div>';
+    return;
+  }
+  container.innerHTML = history.map(function(e) {
+    return '<div class="history-item">' +
+      '<div style="flex:1; min-width:0;">' +
+        '<div class="history-name">' + e.name + '</div>' +
+        '<div class="history-meta">' + e.date + ' · ' + e.services + ' service' + (e.services !== 1 ? 's' : '') + (e.address ? ' · ' + e.address.split(',')[0] : '') + '</div>' +
+      '</div>' +
+      '<div class="history-price">' + fmt(e.total) + '</div>' +
+      '<span class="history-load" onclick="loadQuote(' + e.id + ')">Load</span>' +
+      '<span class="history-load" style="color:#dc2626;" onclick="deleteQuote(' + e.id + ')">✕</span>' +
+    '</div>';
+  }).join('');
+}
+
+// ── RESET ──
+function resetForm() {
+  if (!confirm('Clear all fields and start a new quote?')) return;
+  document.getElementById('cust-name').value = '';
+  document.getElementById('cust-phone').value = '';
+  document.getElementById('cust-address').value = '';
+  document.getElementById('job-notes').value = '';
+  document.getElementById('sqft-roof').value = 2000;
+  document.getElementById('sqft-house').value = 2000;
+  document.getElementById('sqft-concrete').value = 600;
+  document.getElementById('sqft-paver').value = 600;
+  ['roof','house','concrete','pool','paver'].forEach(function(k) {
+    active[k] = true;
+    var btn = document.getElementById('toggle-' + k);
+    if (btn) btn.classList.add('on');
+    if (k !== 'pool') {
+      var input = document.getElementById('sqft-' + k);
+      if (input) input.disabled = false;
+    }
+  });
+  document.getElementById('summary-card').classList.remove('visible');
+  calc();
+}
+
+// ── INIT ──
+calc();
+renderHistory();
+</script>
+
+</body>
+</html>
