@@ -587,7 +587,7 @@ function calc() {
   // Calculate totals
   var activeKeys = ['roof','house','concrete','pool','paver'].filter(function(k) { return active[k]; });
   var subtotal = activeKeys.reduce(function(s, k) { return s + prices[k]; }, 0);
-  var bundleActive = activeKeys.length >= 2;
+  var bundleActive = active.roof && activeKeys.length >= 2;
   var discount = bundleActive ? subtotal * BUNDLE_DISCOUNT : 0;
   var total = subtotal - discount;
 
@@ -632,7 +632,11 @@ function calc() {
         '<span class="result-total-label">Estimated Total</span>' +
         '<span class="result-total-price">' + fmt(total) + '</span>' +
       '</div>' +
-      '<div class="bundle-nudge">💡 Add a second service — customer saves 15% on the bundle</div>';
+      '<div class="bundle-nudge">💡 ' + (function() {
+        if (!active.roof && activeKeys.length >= 2) return 'Add Roof Cleaning';
+        if (!active.roof) return 'Add Roof Cleaning + one more service';
+        return 'Add a second service';
+      })() + ' — customer saves 15% on the bundle</div>';
   }
   document.getElementById('result-totals').innerHTML = totalsHtml;
 
