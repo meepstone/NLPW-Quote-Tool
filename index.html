@@ -406,7 +406,7 @@ body {
       <button class="service-toggle on" id="toggle-house" onclick="toggleSvc('house')"></button>
       <div class="service-info">
         <div class="service-name">🏡 House Exterior Wash</div>
-        <div class="service-rate">$0.08/sq ft · walls, soffits & gutters</div>
+        <div class="service-rate">$0.10/sq ft · walls, soffits & gutters</div>
       </div>
       <div class="service-input-wrap">
         <input type="number" class="service-sqft" id="sqft-house" value="2000" min="0" max="10000" oninput="calc()">
@@ -515,11 +515,11 @@ var active = { roof: true, house: true, concrete: true, pool: true, paver: true 
 
 // ── PRICING ──
 var RATES = {
-  roof_min: 0.25,   // at 1800 sqft
-  roof_max: 0.225,  // at 3500 sqft
-  roof_sqft_min: 1800,
-  roof_sqft_max: 3500,
-  house: 0.08,
+  roof_min: 0.25,     // flat rate up to roof_sqft_min
+  roof_max: 0.23,     // tapered rate at roof_sqft_max and beyond
+  roof_sqft_min: 2000,
+  roof_sqft_max: 3000,
+  house: 0.10,
   concrete: 0.20,
   pool_flat: 150,
   paver: 1.30
