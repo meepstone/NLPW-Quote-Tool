@@ -600,6 +600,13 @@ function calc() {
     pool:     '🏊 Pool Cage Cleaning (flat rate)',
     paver:    '🧱 Paver Sealing (' + paverSqft.toLocaleString() + ' sq ft @ $1.30)'
   };
+  var clientLabelMap = {
+    roof:     '🏠 Roof Cleaning',
+    house:    '🏡 House Exterior Wash',
+    concrete: '🚿 Concrete/Paver Cleaning',
+    pool:     '🏊 Pool Cage Cleaning',
+    paver:    '🧱 Paver Sealing'
+  };
   ['roof','house','concrete','pool','paver'].forEach(function(k) {
     linesHtml += '<div class="result-line' + (active[k] ? '' : ' inactive') + '">' +
       '<span class="result-line-label">' + labelMap[k] + '</span>' +
@@ -641,7 +648,7 @@ function calc() {
   document.getElementById('result-totals').innerHTML = totalsHtml;
 
   // Store for summary/copy
-  window._lastQuote = { prices: prices, subtotal: subtotal, discount: discount, total: total, bundleActive: bundleActive, activeKeys: activeKeys, labelMap: labelMap, rate: rate, roofSqft: roofSqft, houseSqft: houseSqft, concreteSqft: concreteSqft };
+  window._lastQuote = { prices: prices, subtotal: subtotal, discount: discount, total: total, bundleActive: bundleActive, activeKeys: activeKeys, labelMap: labelMap, clientLabelMap: clientLabelMap, rate: rate, roofSqft: roofSqft, houseSqft: houseSqft, concreteSqft: concreteSqft };
   updateSummary();
 }
 
@@ -671,7 +678,7 @@ function updateSummary() {
   var linesHtml = '';
   q.activeKeys.forEach(function(k) {
     linesHtml += '<div class="summary-line">' +
-      '<span class="summary-line-label">' + q.labelMap[k] + '</span>' +
+      '<span class="summary-line-label">' + q.clientLabelMap[k] + '</span>' +
       '<span class="summary-line-price">' + fmt(q.prices[k]) + '</span>' +
     '</div>';
   });
@@ -706,7 +713,7 @@ function copyQuote() {
 
   var lines = ['Next Level Pressure Washing — Quote', now, ''];
   q.activeKeys.forEach(function(k) {
-    lines.push('• ' + q.labelMap[k] + ': ' + fmt(q.prices[k]));
+    lines.push('• ' + q.clientLabelMap[k] + ': ' + fmt(q.prices[k]));
   });
   lines.push('');
   if (q.bundleActive) {
